@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Firmy</title>
+	<script src="https://code.jquery.com/jquery-1.10.2.js">
+	</script>
+	<script src="http://code.jquery.com/ui/1.11.1/jquery-ui.js">
+	</script>
+	<link href="//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css" rel="stylesheet">
+
+	<style>
+		.current {
+			outline: 3px red dashed;
+			background-color: #ffffcc;
+		}
+
+		#divFrame {
+			width: 100%;
+		}
+
+		#divTabelaSlider {
+			height: 550px;
+			float: right;
+			width:15px;
+		}
+
+		#divTabela {
+/*			width: 98.6%;*/
+			margin-right: 20px;
+			outline: 1px grey solid;
+			height: 550px;
+			overflow: hidden;
+/*			padding: 2px;*/
+		}
+
+		#divTabela.focusin {
+			outline: 2px black solid;
+		}
+
+		.divTabelaRow {
+			width: 99.7%;
+			height: 23px;
+			border: 1px solid blue;
+			padding: 1px;
+			margin: -0.5px;
+			float: left;
+		}
+
+		.divTabelaRow > div {
+			overflow: hidden;
+			height: 23px;
+			float: left;
+			/* border: 1px solid black; */
+			border-right: 1px solid black;
+			padding-left: 2px;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="divFrame">
+		<div id="divTabelaSlider"></div>
+		<div id="divTabela" class="divTabela">
+
+		</div>
+	</div>
+	<div id="tabela"></div>
+	<script>
+		if (document.onload)
+			document.onload.call(this);
+	</script>
+</body>
+
+</html>
