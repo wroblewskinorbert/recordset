@@ -267,7 +267,7 @@ $(document).ready(function () {
 			});
 
 		}
-		impet.firmy._openTable(impet.firmy._firmyOtwartoTabele);
+//		impet.firmy._openTable(impet.firmy._firmyOtwartoTabele);
 		/*
 				firmy.dodajMarker = function (x, jaki, size) {
 					function zamianaPriorytetuNaKolor(priorytet) {
@@ -382,7 +382,7 @@ $(document).ready(function () {
 					
 					*/
 
-
+/*
 		//		$.when(firmyPracownicy._server.deferred).done(function(){
 		//		//		debugger;
 		//
@@ -391,7 +391,7 @@ $(document).ready(function () {
 
 		//	firmy.nazwa.filter = 'tes';
 		//	firmy.ocena.filter = '==5||==6||==4||==0||==null';
-		/*
+		
 
 	firmy.ulica.filter=".*mie";
 firmy.ulica.filter="";

@@ -1,5 +1,11 @@
-
-body {
+* {
+	box-sizing: border-box;
+}
+document, html, body {
+	width:100%;
+	height: 100%;
+	margin: 0px;
+	padding: 0px;
     background-color: #ffffff;
 }
 
@@ -11,4 +17,16 @@ body {
 
 #tabelaFirmKontener {
 	
+}
+
+#tabelaFirmKotener {
+	border: solid black 1px;
+	position: relative;
+	height: 300px;
+	top: -300px;
+}
+
+#glowneOkno {
+	width:100%;
+	height: 100%;
 }

@@ -790,93 +790,70 @@ var console, $, window, setTimeout, XMLHttpRequest, wysokoscDivData = 27;
 
 	};
 
-	Recordset.prototype._openTable = function (callback) {
+	Recordset.prototype._openTable = function (tableDiv) {
 		var that = this;
-		if (!this._okno || this._okno.closed) {
-			this._okno = window.open("firmyTabela.html", 'tabela' + this._table, "resize");
-		}
-		setTimeout(function () {
-			that._okno.$('#tabela').empty().html(that._makeTable(5));
-			that.$divTable = that._okno.$('#tabela');
-			that.$divTabela = that._okno.$('#divTabela');
-			that.$table = that.$divTable.children().first();
-			that.$rowByName = that.$table.get(0).tBodies[0].rows;
-			that._div.obliczLimit();
-			that._div.wypelnijDiv();
-			that.$divTabela.on('click', '.divTabelaRow', kliknietoRekord);
-			window.addEventListener('unload', function (e) {
-				that._okno.close();
-			});
-			that._okno.$('body').on('keydown', function (e) {
-				if (that._div.focus) {
-					if (e.which == '38') {
-						// up
-						that._previous;
-					} else if (e.which == '40') {
-						// down
-						that._next;
-					} else if (e.which == '34') {
-						if (e.ctrlKey) {
-							that._last;
-							return;
-						}
-						//page down
-						that._next = that._div.limit - 1;
-					} else if (e.which == '33') {
-						if (e.ctrlKey) {
-							that._first;
-							return;
-						}
-
-						//page up
-						that._previous = that._div.limit - 1;
+		that.$divTabela = $(tableDiv);
+		that._div.obliczLimit();
+		that._div.wypelnijDiv();
+		that.$divTabela.on('click', '.divTabelaRow', kliknietoRekord);
+		$('body').on('keydown', function (e) {
+			if (that._div.focus) {
+				if (e.which == '38') {
+					// up
+					that._previous;
+				} else if (e.which == '40') {
+					// down
+					that._next;
+				} else if (e.which == '34') {
+					if (e.ctrlKey) {
+						that._last;
+						return;
 					}
-				}
-			});
-			that.$divTabela.on('wheel', function (e) {
-				var delta = e.originalEvent.deltaY;
-				if (delta > 0 && that._div.fromPosition + 1 < that._length) {
-					that._div.fromPosition += 1;
-					that._div.wypelnijDiv();
-				} else if (delta < 0 && that._div.fromPosition > 0) {
-					that._div.fromPosition--;
-					that._div.wypelnijDiv();
-				}
-			});
-			defineProp(that, '$row', function () {
-				return that.$rowByName[that._indexArray[that._id][that._idName]];
-			});
-			$(that._indexArray[that._id].$div).addClass('current');
-			$(that.$row).addClass('current');
-			that.$divTabela.addClass('focusin');
-			that._focus = that.$divTabela;
-			that._slider = that.$divTabela.parent().find('#divTabelaSlider');
-			that._slider.slider({
-				orientation: 'vertical',
-				range: 'max',
-				min: 1,
-				max: that._length,
-				value: that._position,
-				slide: function (event, ui) {
-					that._div.fromPosition = that._length - ui.value;
-					that._div.wypelnijDiv(); {
-						log(ui.value);
+					//page down
+					that._next = that._div.limit - 1;
+				} else if (e.which == '33') {
+					if (e.ctrlKey) {
+						that._first;
+						return;
 					}
+
+					//page up
+					that._previous = that._div.limit - 1;
 				}
-			});
-
-			that._beforePositionChanged.add(beforeClick);
-			that._positionChanged.add(afterClick);
-
-			if ($.isFunction(callback)) {
-				callback.apply(that, arguments);
 			}
-
-		}, 2250);
+		});
+		that.$divTabela.on('wheel', function (e) {
+			var delta = e.originalEvent.deltaY;
+			if (delta > 0 && that._div.fromPosition + 1 < that._length) {
+				that._div.fromPosition += 1;
+				that._div.wypelnijDiv();
+			} else if (delta < 0 && that._div.fromPosition > 0) {
+				that._div.fromPosition--;
+				that._div.wypelnijDiv();
+			}
+		});
+		$(that._indexArray[that._id].$div).addClass('current');
+		that.$divTabela.addClass('focusin');
+		that._focus = that.$divTabela;
+		that._slider = that.$divTabela.parent().find('#divTabelaSlider');
+		that._slider.slider({
+			orientation: 'vertical',
+			range: 'max',
+			min: 1,
+			max: that._length,
+			value: that._position,
+			slide: function (event, ui) {
+				that._div.fromPosition = that._length - ui.value;
+				that._div.wypelnijDiv(); {
+					log(ui.value);
+				}
+			}
+		});
+		that._beforePositionChanged.add(beforeClick);
+		that._positionChanged.add(afterClick);
 
 		function beforeClick() {
 			$(that._indexArray[that._id].$div).removeClass('current');
-			$(that.$row).removeClass('current');
 		}
 
 		function afterClick() {
@@ -887,7 +864,6 @@ var console, $, window, setTimeout, XMLHttpRequest, wysokoscDivData = 27;
 			}
 			that._div.wypelnijDiv();
 			$(that._indexArray[that._id].$div).addClass('current');
-			$(that.$row).addClass('current');
 			that._slider.slider('option', 'value', that._length - that._position);
 		}
 
@@ -899,5 +875,5 @@ var console, $, window, setTimeout, XMLHttpRequest, wysokoscDivData = 27;
 	};
 	window.nora = window.nora || {};
 	window.nora.Recordset = Recordset;
-	window.nora.defineProp=defineProp;
+	window.nora.defineProp = defineProp;
 })();
