@@ -412,7 +412,13 @@ firmy.$table.empty().append(firmy._htmlTable);
 
 	impet.ustaweinia = new Recordset('ustawienia');
 	impet.ustaweinia._serverLoad();
-
+	impet.klienci= new nora.Recordset('mw_klienci','kli_id');
+	impet.klienci._server.serverPath="http://localhost/ajaxmysql.php";
+	impet.klienci._serverLoad();
+	impet.klienciHistoria= new nora.Recordset('mw_historiaklienta','hik_id');
+	impet.klienciHistoria._server.serverPath="http://localhost/ajaxmysql.php";
+	impet.klienciHistoria._serverLoad();
+	
 	{
 		var tablicaZnakow = {
 			telefon: '<span style="font-size:1.6em;">☎</span>',

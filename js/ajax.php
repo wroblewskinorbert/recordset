@@ -17,7 +17,7 @@ $opis="\;)";
 if (!isset($_REQUEST['table']))  dbError('Nie podano parametru table - nazwy tabeli.\nJeżeli table jest okreslone a parametr select nie - wtedy wypisuje wszystkie rekordy\nJezeli data=0 a action=select wtedy condition okresla warunki\n -> w przeciwnym wypadku sql=encodeURIComponent(JSON.stringify(data))');
 if  (!isset($_REQUEST['action'])){
 $_REQUEST['action']='select';
-	$_REQUEST['condition']='id=id';
+	$_REQUEST['condition']='1=1';
 	$_REQUEST['data']=0;
 		;}
 	/* Connect using SQL Server Authentication. */
