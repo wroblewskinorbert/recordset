@@ -3,17 +3,29 @@
 
 <head>
 	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Recordset</title>
 	<link rel="stylesheet" href="css/styles.css">
 	<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
 	<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
 	<script src="js/main.js"></script>
 	<script src="js/recordset.js"></script>
+	<script src="http://code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
+	<link href="//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css" rel="stylesheet">
+
 </head>
 
 <body>
 	<div id="glowneOkno"></div>
-	<div id="tabelaFirmKotener">&nbsp;</div>
+	<div id="divFrame">
+		<div id="divTabelaSlider"></div>
+		<div id="divTabela" class="divTabela"></div>
+	</div>
+	<div id="divFiltr">
+		<input id="filtrNazwa" style="width:245px;" type="text" placeholder="Filtr po nazwie" value=""></input>
+		<input id="filtrMiejscowosc" style="margin-left:85px;width:170px" type="text" placeholder="Filtr po miejscowości" value=""></input>
+	</div>
+
 </body>
 
 </html>

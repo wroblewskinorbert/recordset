@@ -64,6 +64,7 @@ $(document).ready(function () {
 		//firmy._server.updatable = true;
 		impet.firmy._bind('miejscowosc', impet.miejscowosci, 'miejscowoscId');
 		impet.firmy._bind('miejscowoscNazwa', impet.miejscowosci, 'miejscowoscId', 'nazwa');
+		impet.firmy.miejscowoscNazwa.type='string';
 		defineProp(impet.firmy.uwagi, 'html', function () {
 			return "<div style='height:25px; overflow:hidden;'>" + this.value + "</div>";
 		});
@@ -77,17 +78,7 @@ $(document).ready(function () {
 			return "<div style='height:100%; width:" + ((this.value !== null) ? (this.value * 100 / 6).toFixed(0) : "100") + "%; background-color:" + ((this.value !== null) ? "red" : "grey") + ";' >" + ((this.value !== null) ? (this.value) : (-1)) + "</div>";
 		});
 
-		impet.firmy.kod.columnStyle = 'overflow:hidden; width:54px;';
-		impet.firmy.uwagi.columnStyle = 'overflow:hidden; width:400px;';
-		impet.firmy.email.columnStyle = 'overflow:hidden; width:200px;';
-		impet.firmy.www.columnStyle = 'overflow:hidden; width:100px;';
-		impet.firmy.nazwa.columnStyle = 'overflow:hidden; width:250px;';
-		impet.firmy.ocena.columnStyle = 'overflow:hidden; width:40px;';
-		impet.firmy.priorytet.columnStyle = 'overflow:hidden; width:40px;';
-		impet.firmy.miejscowoscNazwa.columnStyle = 'overflow:hidden; width:170px;';
-		impet.firmy.ulica.columnStyle = ' width:180px;'
-		impet.firmy.miejscowoscId.columnStyle = 'display:none;';
-		impet.firmy.miejscowosc.columnStyle = 'display:none;';
+
 		/*
 				interface.add('firmaFaktury', 'faktury');
 				interface.add('firmaUwagi', 'uwagi');
@@ -131,6 +122,7 @@ $(document).ready(function () {
 					//wypiszPracownikow(fc.id);
 		*/
 		function filterRestOfRecords() {
+			if(impet.firmy._current.id===null) return;
 			impet.telefony._clearFilter();
 			impet.telefony._filter('firmaId', '==' + impet.firmy._current.id);
 			impet.firmyPracownicy._clearFilter();
@@ -265,9 +257,19 @@ $(document).ready(function () {
 				that._sort('ulica', that.ulica.sorted == 1 ? false : true);
 				that.ulica.sorted = -that.ulica.sorted;
 			});
-
+			$('#filtrNazwa').on('input',function(e){
+				impet.firmy._records.recoverRecords();
+				impet.firmy._filter('nazwa', this.value);
+			})
+			$('#filtrMiejscowosc').on('input',function(e){
+				impet.firmy._records.recoverRecords();
+				impet.firmy._filter('miejscowoscNazwa', this.value);
+			})
+			f=impet.firmy;
 		}
-//		impet.firmy._openTable(impet.firmy._firmyOtwartoTabele);
+		impet.firmy._openTable($('#divTabela'));
+		impet.firmy._firmyOtwartoTabele();
+		
 		/*
 				firmy.dodajMarker = function (x, jaki, size) {
 					function zamianaPriorytetuNaKolor(priorytet) {

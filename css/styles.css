@@ -1,32 +1,99 @@
 * {
 	box-sizing: border-box;
 }
-document, html, body {
-	width:100%;
+
+document,
+html,
+body {
+	width: 100%;
 	height: 100%;
 	margin: 0px;
 	padding: 0px;
-    background-color: #ffffff;
+	background-color: #ffffff;
 }
 
 
-
-#tabelaFirm {
-	
+.current {
+	outline: 3px red dashed;
+	background-color: #ffffcc;
 }
 
-#tabelaFirmKontener {
-	
-}
 
-#tabelaFirmKotener {
+#divFrame {
 	border: solid black 1px;
 	position: relative;
 	height: 300px;
-	top: -300px;
+	top: -324px;
+	width: 100%;
+	overflow: hidden;
 }
 
+#divTabelaSlider {
+	height: inherit;
+	float: right;
+	width: 15px;
+}
+
+#divTabela {
+	/*			width: 98.6%;*/
+	margin-right: 20px;
+	outline: 1px grey solid;
+	height: inherit;
+	overflow: hidden;
+	/*			padding: 2px;*/
+}
+
+#divTabela.focusin {
+	outline: 2px black solid;
+}
+
+.divTabelaRow {
+	width: 99.7%;
+	height: 23px;
+	border: 1px solid blue;
+	padding: 1px;
+	margin: -0.5px;
+	float: left;
+}
+
+.divTabelaRow > div {
+	overflow: hidden;
+	height: 23px;
+	float: left;
+	/* border: 1px solid black; */
+	border-right: 1px solid black;
+	padding-left: 2px;
+}
 #glowneOkno {
-	width:100%;
+	width: 100%;
 	height: 100%;
+}
+
+
+.divTabelaNazwa {
+	width: 250px;
+}
+
+.divTabelaOcena {
+	width: 40px;
+}
+
+.divTabelaPriorytet {
+	width: 40px;
+}
+
+.divTabelaMiejscowoscNazwa {
+	width: 170px;
+}
+
+.divTabelaUlica {
+	width: 180px;
+}
+
+.divTabelaUwagi {
+	width: 400px;
+}
+#divFiltr {
+	position: absolute;
+	bottom: 0;
 }

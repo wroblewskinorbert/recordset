@@ -1,4 +1,4 @@
-var console, $, window, setTimeout, XMLHttpRequest, wysokoscDivData = 27;
+var console, $, window, setTimeout, XMLHttpRequest, wysokoscDivData = 22;
 (function () {
 	var ifLog = true;
 
@@ -160,6 +160,9 @@ var console, $, window, setTimeout, XMLHttpRequest, wysokoscDivData = 27;
 					that.$divTabela.append(this.$getDiv());
 				}
 				that.___position = prevPos;
+				that._slider.slider('option', 'max', that._length);			
+				that._slider.slider('option', 'value', that._length - fromPosition);
+
 			},
 			limit: 38,
 			fromPosition: 0,
@@ -311,7 +314,30 @@ var console, $, window, setTimeout, XMLHttpRequest, wysokoscDivData = 27;
 		}
 
 	};
+	Recordset.prototype._delete = function(){
+		if(this._length===0) return;
+		var that = this;
+		that._server.response = null;
+			var obj = that._server.parameterObject;
+		obj.action = 'delete';
+		obj.condition = this._idName + "='" + this._id + "'";
+		if (that._server.synchro) {
+			that._serverGetSynchro(obj);
+			var tmp=that._position;
+			that._requeryAll();
+			if(that.length>tmp){
+				that._position=tmp;
+			} else {that._position=tmp-1;}
+			log(that._server.response);
+		} else {
+			return that._serverGet(obj).done(function () {
+				log(that._server.response);
+			});
+		}
+		
 
+	}
+	
 	Recordset.prototype._addRecord = function (record) {
 		var that = this;
 		//		record = new that._Record(record);
@@ -391,7 +417,8 @@ var console, $, window, setTimeout, XMLHttpRequest, wysokoscDivData = 27;
 				filterText = filterText + '.test(' + thisField + ')';
 			}
 		} else {
-			filterText = filterText.replace(/==/g, thisField + '===').replace(/>=/g, thisField + '>=').replace(/<=/g, thisField + '<=').replace(/>/g, thisField + '>').replace(/</g, thisField + '<');
+			filterText=' '+filterText;
+			filterText = filterText.replace(/\B([!<>=])([=]?[=]?)/g, thisField + '$1$2');
 		}
 		this.parent._filterParsed.push('(' + filterText + ')');
 		return filterText;
@@ -426,7 +453,8 @@ var console, $, window, setTimeout, XMLHttpRequest, wysokoscDivData = 27;
 	Recordset.prototype._filter = function (column, filtr) {
 		this[column].filter = filtr;
 		this._records.setRecords(this._filterRecordset());
-		this._div.wypelnijDiv();
+//		this._div.wypelnijDiv();
+//		this._position=0;
 	};
 	Recordset.prototype._clearFilter = function () {
 		var keys = Object.getOwnPropertyNames(this._current);
@@ -436,7 +464,7 @@ var console, $, window, setTimeout, XMLHttpRequest, wysokoscDivData = 27;
 				tmp.filter = '';
 		}
 		this._records.recoverRecords();
-		this._div.wypelnijDiv();
+		//this._div.wypelnijDiv();
 	};
 	Recordset.prototype._Records = function () {
 		Array.apply(this, arguments);
@@ -456,6 +484,7 @@ var console, $, window, setTimeout, XMLHttpRequest, wysokoscDivData = 27;
 		this.originalRecords.forEach(function (ele) {
 			that.push(ele);
 		});
+		this._parent._indexArray = [];
 		this._parent._index();
 		this._parent._position = 0;
 	};
@@ -484,8 +513,9 @@ var console, $, window, setTimeout, XMLHttpRequest, wysokoscDivData = 27;
 		arrCopy.forEach(function (ele, ind, array) {
 			that.push(ele);
 		});
+		this._parent._indexArray = [];
 		this._parent._index();
-		this._parent._position = 0;
+		this._parent._position = this._parent._length>0?0:-1;
 	};
 
 	Recordset.prototype._makeTable = function (limit) {
@@ -673,9 +703,10 @@ var console, $, window, setTimeout, XMLHttpRequest, wysokoscDivData = 27;
 		});
 
 		defineProp(Recordset.prototype, '_position', function () {
+			if (this._length===0) return -1;
 			return this.___position;
 		}, function (poz) {
-			if ((poz >= this._records.length || poz < 0) && poz !== 0) {
+			if (poz >= this._records.length || poz < -1) {
 				console.warn('Przekroczono granice rekordsetu. Nie ma takiej pozycji ' + poz);
 				return;
 			}
@@ -794,6 +825,20 @@ var console, $, window, setTimeout, XMLHttpRequest, wysokoscDivData = 27;
 		var that = this;
 		that.$divTabela = $(tableDiv);
 		that._div.obliczLimit();
+		that._slider = that.$divTabela.parent().find('#divTabelaSlider');
+		that._slider.slider({
+			orientation: 'vertical',
+			range: 'max',
+			min: 1,
+			max: that._length,
+			value: that._position,
+			slide: function (event, ui) {
+				that._div.fromPosition = that._length - ui.value;
+				that._div.wypelnijDiv(); {
+					//log(ui.value);
+				}
+			}
+		});
 		that._div.wypelnijDiv();
 		that.$divTabela.on('click', '.divTabelaRow', kliknietoRekord);
 		$('body').on('keydown', function (e) {
@@ -835,36 +880,31 @@ var console, $, window, setTimeout, XMLHttpRequest, wysokoscDivData = 27;
 		$(that._indexArray[that._id].$div).addClass('current');
 		that.$divTabela.addClass('focusin');
 		that._focus = that.$divTabela;
-		that._slider = that.$divTabela.parent().find('#divTabelaSlider');
-		that._slider.slider({
-			orientation: 'vertical',
-			range: 'max',
-			min: 1,
-			max: that._length,
-			value: that._position,
-			slide: function (event, ui) {
-				that._div.fromPosition = that._length - ui.value;
-				that._div.wypelnijDiv(); {
-					log(ui.value);
-				}
-			}
-		});
 		that._beforePositionChanged.add(beforeClick);
 		that._positionChanged.add(afterClick);
 
 		function beforeClick() {
+			try{
 			$(that._indexArray[that._id].$div).removeClass('current');
+			}catch(e){
+			}
 		}
 
 		function afterClick() {
 			if (that._div.fromPosition > that._position) {
+				if(that._position>-1){
 				that._div.fromPosition = that._position;
+				} else {
+					that._div.fromPosition = 0;
+				}
 			} else if (that._div.fromPosition + that._div.limit - 1 <= that._position) {
 				that._div.fromPosition = that._position - that._div.limit + 2;
 			}
 			that._div.wypelnijDiv();
+			try{
 			$(that._indexArray[that._id].$div).addClass('current');
-			that._slider.slider('option', 'value', that._length - that._position);
+			}catch(e){
+			};
 		}
 
 		function kliknietoRekord(e) {
