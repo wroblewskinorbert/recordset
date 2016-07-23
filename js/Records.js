@@ -1,5 +1,5 @@
 /*jslint devel: true, debug: true, nomen: true*/
-var $, XMLHttpRequest, console, Proxy, rec, google, map, gm, trasyPunktyWybrana, tw, odc, trasy, tra, trasyPunkty, odcinkiWgKey1, unescape;
+var $, XMLHttpRequest, Proxy, rec, google, map, gm, trasyPunktyWybrana, tw, odc, trasy, tra, trasyPunkty, odcinkiWgKey1, unescape;
 
 function defineProp(obj, property, getFunction, setFunction, enumerable, configurable) {
     'use strict';
@@ -22,18 +22,22 @@ function Records(table, idName, autoLoad, where, orderBy) {
     'use strict';
     var that = this,
         records = [],
-        recordsById = {},
+        pToId = [],
+        recordsById = {"-1" : -1},
         position = -1,
-        id = null,
         oldId = [],
+        oldPosition = [],
         changedProperty = $.Callbacks('memory unique'),
         firstLoad = true;
+    pToId[-1] = -1;
     this.changedProperty = changedProperty;
     this.startFunction = function () {};
     this.Record = function (originalRecord, order) {
+        order = order || pToId.length;
         var complex = {
             id: originalRecord[that.idName],
             originalPosition: order,
+            position: order,
             originalRecord: originalRecord,
             record: this,
             dirties: {}
@@ -42,30 +46,42 @@ function Records(table, idName, autoLoad, where, orderBy) {
             that.stworzPrototypRecordu(originalRecord);
             firstLoad = false;
         }
+        pToId.splice(order, 0, complex.id);
         recordsById[complex.id] = complex;
-        that.positionToId[order] = complex.id;
+//        that.positionToId[order] = complex.id;
         that.idToPosition[complex.id] = order;
         that.byId[complex.id] = complex.record;
         that.recordsOrder[order] = complex.record;
         defineProp(this, that.idName, function () {
             return complex.id;
-        }, function (data) {}, false);
+        }, function (data) {
+            that.id = data;
+        }, false);
+        defineProp(this, '_parent', function () {
+            return complex;
+        });
         that.startFunction.call(that, complex.record);
     };
     that.Record.prototype = {};
+    that.Record.defaultValues = {};
     this.stworzPrototypRecordu = function (rec) {
         var x, thatRecord = this,
             temp;
-
         function zawartoscPrototypu(name) {
             defineProp(that.Record.prototype, name, function () {
-                return recordsById[this[that.idName]].originalRecord[name];
+                if (recordsById[this[that.idName]].originalRecord.hasOwnProperty(name)) {
+                    return recordsById[this[that.idName]].originalRecord[name];
+                }
+                if (that.Record.defaultValues.hasOwnProperty(name)) {
+                    return that.Record.defaultValues[name];
+                }
+                return null;
             }, function (data) {
                 var comp = recordsById[this[that.idName]],
                     or = comp.originalRecord;
                 or[name] = data;
                 that.columns[name]["-dirty"] = true;
-                comp.dirties.name = true;
+                comp.dirties[name] = true;
                 if (that.updatable) {
                     that.update();
                 }
@@ -81,9 +97,9 @@ function Records(table, idName, autoLoad, where, orderBy) {
     this.idChanged = $.Callbacks('memory unique');
     this.byId = [];
     this.records = [];
-    this.positionToId = {};
+    this.positionToId = [];
     this.recordsOrder = {};
-    this.idToPosition = {};
+    this.idToPosition = [];
     this.columns = [];
     if (typeof table === 'string') {
         this.table = table;
@@ -102,33 +118,20 @@ function Records(table, idName, autoLoad, where, orderBy) {
     } else if (table && table.table) {
         $.extend(this, table);
     }
+    this.originalWhere = this.where;
+    this.originalOrderBy = this.orderBy;
     defineProp(that, "length", function () {
-        //		if (that.positionToId) {
-        //			return Object.getOwnPropertyNames(that.positionToId).length - 2;
-        //		}
-        return records.length;
+        return pToId.length;
     }, function (data) {}, false, true);
     defineProp(that, "position", function () {
-        if (id === -1) {
-            return -1;
-        }
-        if (id === null) {
-            return -2;
-        }
-        return that.idToPosition[id];
+        return position;
     }, function (data) {
-        if (that.positionToId[data] || data === -1 || data === -2) {
-            //			position = data;
-            switch (data) {
-            case (-1):
-                id = -1;
-                break;
-            case (-2):
-                id = null;
-                break;
-            default:
-                that.id = that.positionToId[data];
+        if (pToId[data] || data === -1) {
+            position = data;
+            if (that.columns.length) {
+                that.columns.clearDirties();
             }
+            that.idChanged.fire();
             return;
         } else {
             debugger;
@@ -137,31 +140,31 @@ function Records(table, idName, autoLoad, where, orderBy) {
         }
     });
     defineProp(that, "id", function () {
-        return id;
+        return pToId[position];
     }, function (data) {
-        if (data === id) {
+        if (data === pToId[position]) {
             return;
         }
-        if (that.idToPosition.hasOwnProperty(data)) {
-            oldId.push(id);
-            id = data;
-            if (that.columns.length) {
-                that.columns.clearDirties();
-            }
-            this.record = recordsById[id].record;
-            this.idChanged.fire();
+        if (recordsById[data]) {
+            oldId.push(pToId[position]);
+            oldPosition.push(position);
+            that.position = recordsById[data].position;
             return;
         } else {
             console.warn("Nie ma takiego indexu!!!");
             return;
         }
     });
+    defineProp(that, "record", function () {
+        return recordsById[pToId[position]].record;
+    });
     this.clear = function () {
-        records = [];
-        recordsById = {};
-        this.idToPosition = {};
-        this.positionToId = [];
-        this.record = {};
+        records.length = 0;
+        recordsById = {"-1" : -1};
+        pToId.length = 0;
+        this.idToPosition.length = 0;
+        this.positionToId.length = 0;
+//        this.record = {};
         this.byId = {};
     };
     this.fillByRecords = function (response) {
@@ -171,11 +174,15 @@ function Records(table, idName, autoLoad, where, orderBy) {
             idName = that.idName;
         this.clear();
         records = response;
+        position = 0;
         if (!records.length) {
             console.warn("zbiór pusty!");
-            return;
+            position = -1;
+//            return;
         }
-        that.columns = Object.getOwnPropertyNames(records[0]);
+        records[-1] = $.extend({}, that.Record.defaultValues);
+        that.columns = Object.getOwnPropertyNames(records[position]);
+        that.originalColumns = that.columns.slice();
         that.columns.clearDirties = function () {
             this.forEach(function (ele, ind, arr) {
                 delete arr[ele]['-dirty'];
@@ -186,15 +193,15 @@ function Records(table, idName, autoLoad, where, orderBy) {
             columns[name] = {
                 html: ["", ""],
                 old: [],
-                typeOf: typeof records[0][name],
+                typeOf: typeof records[position][name],
                 filter: ""
             };
         }
         that.columns.forEach(columnsToRecorsProperty);
         records.forEach(function (record, ind, arr) {
-            that.byId[record[that.idName]] = new that.Record(record, ind);
+            that.byId[record[that.idName]] = new that.Record(record, ind, arr);
         });
-        that.position = 0;
+        that.addNew();
     };
     this.positionUndo = function () {
         if (oldId.length) {
@@ -202,20 +209,18 @@ function Records(table, idName, autoLoad, where, orderBy) {
         }
     };
     this.addNew = function (originRec) {
-        var newRec = {},
-            position,
-            newRecord = {};
-        newRec = originRec || {};
-        //		position = records.push(newRec) - 1;
+        var newRec,
+            newRecord;
+        originRec = originRec || {};
+        newRec = $.extend({}, that.Record.defaultValues, originRec);
         newRec[that.idName] = -1;
         newRecord = new that.Record(newRec, -1);
-        that.id = -1;
-        return newRecord;
+//      return newRecord;
     };
     this.getCopy = function (deep) {
         var res;
         deep = deep || true;
-        res = $.extend(deep, {}, recordsById[id].originalRecord);
+        res = $.extend(deep, {}, recordsById[pToId[position]].originalRecord);
         return res;
     };
     this.getArray = function () {
@@ -226,25 +231,40 @@ function Records(table, idName, autoLoad, where, orderBy) {
         return t;
     };
     this.getRow = function () {
-        return recordsById[id].originalRecord;
+        return recordsById[pToId[position]].originalRecord;
     };
     this.setRecord = function (data) {
         var keys = Object.getOwnPropertyNames(data),
             idOfRecord = data[that.idName];
         if (that.id === -1) {
-            data = new this.Record(data);
+//            data = new this.Record(data);
+            records[-1].id = idOfRecord;
+        } else {
             that.id = idOfRecord;
-            return data;
         }
-        that.id = idOfRecord;
         keys.forEach(function (ele, ind, arr) {
-            if (recordsById[id].originalRecord[ele] !== data[ele]) {
-                recordsById[id].originalRecord[ele] = data[ele];
-                records[that.idToPosition[id]] = data[ele];
+            if (recordsById[pToId[position]].originalRecord[ele] !== data[ele]) {
+                recordsById[pToId[position]].originalRecord[ele] = data[ele];
+                delete recordsById[pToId[position]]._parent.dirties[ele];
+//                records[position][ele] = data[ele];
             }
         });
         return data;
     };
+    this.makeIdToPosition = function () {
+        var keys = Object.getOwnPropertyNames(recordsById);
+        that.idToPosition.length = 0;
+        that.positionToId.length = 0;
+        keys.forEach(function (ele, ind, arr) {
+            ele.position = null;
+        });
+        pToId.forEach(function (ele, ind, arr) {
+            recordsById[ele].position = ind;
+            that.idToPosition[ele] = ind;
+            that.positionToId[ind] = ele;
+        });
+    };
+
     this.deleteRecord = function () {
         var that = this,
             deletedPosition = that.position,
@@ -253,21 +273,18 @@ function Records(table, idName, autoLoad, where, orderBy) {
         //		debugger;
         this.get().deferred.done(function (res, succ) {
             if (succ === "success") {
-                records.splice(deletedPosition, 1);
-                delete that.idToPosition[id];
+                pToId.splice(deletedPosition, 1);
+                delete that.idToPosition[pToId[position]];
                 delete that.positionToId[deletedPosition];
-                delete recordsById[id];
+                delete recordsById[pToId[position]];
                 // todo - usunąć z rekord z naszego zbioru
-                for (x = deletedPosition; x < that.length; x += 1) {
-                    that.positionToId[x] = that.positionToId[x + 1];
-                    that.idToPosition[that.positionToId[x]] = x;
-                }
+                that.makeIdToPosition();
                 if (deletedPosition < that.length) {
                     that.position = deletedPosition;
                 } else if (deletedPosition > 0) {
                     that.position = deletedPosition - 1;
                 } else {
-                    that.id = "null";
+                    that.id = -1;
                 }
                 console.log(res);
             }
@@ -322,7 +339,7 @@ Records.prototype.parameters = function () {
     var that = this,
         para = {
             table: this.table,
-            condition: ((this.where === "") ? "" : " WHERE " + this.where) + ((this.orderBy === "") ? "" : " ORDER BY " + this.orderBy),
+            condition: ((this.where === "") ? " 1=1 " : " " + this.where) + ((this.orderBy === "") ? "" : " ORDER BY " + this.orderBy),
             action: that.action
         };
     defineProp(para, 'data', function () {
@@ -332,7 +349,7 @@ Records.prototype.parameters = function () {
         var res = that.getCopy(true);
         delete res[that.idName];
         that.columns.forEach(function (ele, ind, arr) {
-            if (!arr[ele]["-dirty"]) {
+            if (!res._parent.dirties[ele]) {
                 delete res[ele];
             } else if (typeof res[ele] === 'string') {
                 res[ele] = res[ele].replace(/\'/g, "''");
@@ -397,9 +414,10 @@ Records.prototype.get = function () {
 Records.prototype.loadAll = function () {
     'use strict';
     var that = this;
-    delete this.action;
-    // domyślne ustawienia - czyli select i data ===0
-    delete this.data;
+    this.action = 'select';
+    this.where = this.originalWhere;
+    this.orderBy = this.originalOrderBy;
+    this.data = 0;
     this.get().deferred.done(function (records) {
         that.fillByRecords(records);
     });
@@ -509,9 +527,10 @@ rec.loadAll();
 this.miasta = new Records('plMiejscowosci', 'id', true, '1=1', 'nazwa');
 this.prac = new Records('firmypracownicy');
 odc = new Records('odcinki', 'key1', false);
+this.impetPracownicy = new Records('impetPracownicy', 'id2');
+/*
 trasyPunkty = new Records('trasyPunktyView', 'id', true, '1=1', ' kiedy desc');
 trasyPunktyWybrana = new Records('trasyPunktyView', 'id', false, '1=1', ' kolejnosc asc');
-this.impetPracownicy = new Records('impetPracownicy', 'id2');
 
 function Wyjazd(parent) {
     'use strict';
@@ -585,6 +604,7 @@ defineProp(tw, 'keys', function () {
     odc.where += tw.key;
     return odc.where;
 });
+*/
 /*
 //trasy.odcinkiWgKey1 = [];
 trasy.wczytajZapisaneSciezki = function () {
