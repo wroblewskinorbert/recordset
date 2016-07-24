@@ -1,5 +1,5 @@
 /*jslint devel: true, debug: true, nomen: true*/
-var $, XMLHttpRequest, Proxy, rec, google, map, gm, trasyPunktyWybrana, tw, odc, trasy, tra, trasyPunkty, odcinkiWgKey1, unescape;
+var $, XMLHttpRequest, Proxy, rec, google, map, trasyPunktyWybrana, tw, odc, trasy, tra, trasyPunkty, odcinkiWgKey1, unescape;
 
 function defineProp(obj, property, getFunction, setFunction, enumerable, configurable) {
     'use strict';
@@ -514,7 +514,7 @@ rec.startFunction = function (row) {
     if (row.wspE === null) {
         row.wspE = 16;
     }
-    row.mvc = new gm.MVCObject();
+    row.mvc = new google.maps.MVCObject();
     row.mvc.set('position', new google.maps.LatLng(row.wspN, row.wspE));
     row.marker = new google.maps.Marker({
         map: map,
@@ -646,7 +646,7 @@ trasy.wyznaczDroge = function () {
 		// chyba tak
 	}
 	trasy.wszystkieDrogi[trasy.id] = {};
-	trasy.wszystkieDrogi[trasy.id].poly = tra.poly = new gm.Polyline({
+	trasy.wszystkieDrogi[trasy.id].poly = tra.poly = new google.maps.Polyline({
 		map: map
 	});
 	trasy.wszystkieDrogi[trasy.id].path = tra.path = tra.poly.getPath();
@@ -660,7 +660,7 @@ trasy.wyznaczDroge = function () {
 	});
 	tra.paths = tra.poly.latLngs;
 	for (x = 0; x < pozycja.length - 1; x += 1) {
-		mvc = new gm.MVCArray();
+		mvc = new google.maps.MVCArray();
 		mvc.push(pozycja[x]);
 		mvc.push(pozycja[x + 1]);
 		tra.paths.setAt(x, mvc);
@@ -697,7 +697,7 @@ trasy.wyznaczDroge = function () {
 				b = a[ele.key2];
 				if (b) {
 					b.mvc.clear();
-					a = gm.geometry.encoding.decodePath(unescape(ele.data));
+					a = google.maps.geometry.encoding.decodePath(unescape(ele.data));
 					b.mvc.j = a;
 					b.wyznacz = false;
 				}
@@ -766,7 +766,7 @@ trasy.calculateRoute = function (fromIndex, toIndex, tab) {
 		origin: keyToPosition(tab[fromIndex]),
 		destination: keyToPosition(tab[toIndex]),
 		travelMode: google.maps.TravelMode.DRIVING,
-		unitSystem: gm.UnitSystem.METRIC
+		unitSystem: google.maps.UnitSystem.METRIC
 	};
 	for (x = fromIndex + 1; x < toIndex; x += 1) {
 		waypoints.push({

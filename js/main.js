@@ -1,9 +1,12 @@
-var nbsp = '&nbsp;'
+/*jslint browser: true, devel: true, nomen: true*/
+var nbsp = '&nbsp;';
 var wysokoscDivData = 27;
 var impet = {},
-	nora, $;
+	nora,
+    $;
 
 $(document).ready(function () {
+    'use strict';
 	var defineProp = nora.defineProp, Recordset = nora.Recordset;
 	impet.firmy = new Recordset('firmy');
 	impet.firmy._serverLoad();
@@ -26,16 +29,16 @@ $(document).ready(function () {
 	};
 	impet.telefony._server.deferred.done(function () {
 		impet.telefony._wypiszRekord = function () {
-			var telString = "";
-			var nrWidoczny = this._current.numer;
-			if (this._current['podstawowy'] == 1) {
+			var telString = "",
+                nrWidoczny = this._current.numer;
+			if (this._current.podstawowy === 1) {
 				nrWidoczny = '<b>' + nrWidoczny + '</b>';
 			}
 			telString += '<a href="callto:+48' + this._current.numer + '" title="' + this._current.typ + '">' + nrWidoczny + '</a></br>';
 			return telString;
 		};
 
-	})
+	});
 	impet.materialyRozdaneLista = new Recordset('MrktgMatRozdLista');
 	impet.materialyRozdaneLista._serverLoad();
 	$.when(impet.materialyRozdaneLista._server.deferred).done(
@@ -64,7 +67,7 @@ $(document).ready(function () {
 		//firmy._server.updatable = true;
 		impet.firmy._bind('miejscowosc', impet.miejscowosci, 'miejscowoscId');
 		impet.firmy._bind('miejscowoscNazwa', impet.miejscowosci, 'miejscowoscId', 'nazwa');
-		impet.firmy.miejscowoscNazwa.type='string';
+		impet.firmy.miejscowoscNazwa.type = 'string';
 		defineProp(impet.firmy.uwagi, 'html', function () {
 			return "<div style='height:25px; overflow:hidden;'>" + this.value + "</div>";
 		});
@@ -122,7 +125,9 @@ $(document).ready(function () {
 					//wypiszPracownikow(fc.id);
 		*/
 		function filterRestOfRecords() {
-			if(impet.firmy._current.id===null) return;
+			if (impet.firmy._current.id === null) {
+                return;
+            }
 			impet.telefony._clearFilter();
 			impet.telefony._filter('firmaId', '==' + impet.firmy._current.id);
 			impet.firmyPracownicy._clearFilter();
@@ -230,7 +235,7 @@ $(document).ready(function () {
 					indexArray: that._indexArray
 				});
 				that._records.setRecords(that._records);
-				that._sort('nazwa', that.nazwa.sorted == 1 ? false : true);
+				that._sort('nazwa', that.nazwa.sorted === 1 ? false : true);
 				that.nazwa.sorted = -that.nazwa.sorted;
 			});
 			impet.fd.on('contextmenu', '.divTabelaMiejscowoscNazwa', function (e) {
@@ -242,7 +247,7 @@ $(document).ready(function () {
 					indexArray: that._indexArray
 				});
 				that._records.setRecords(that._records);
-				that._sort('miejscowoscNazwa', that.miejscowoscNazwa.sorted == 1 ? false : true);
+				that._sort('miejscowoscNazwa', that.miejscowoscNazwa.sorted === 1 ? false : true);
 				that.miejscowoscNazwa.sorted = -that.miejscowoscNazwa.sorted;
 			});
 			impet.fd.on('contextmenu', '.divTabelaUlica', function (e) {
@@ -254,19 +259,19 @@ $(document).ready(function () {
 					indexArray: that._indexArray
 				});
 				that._records.setRecords(that._records);
-				that._sort('ulica', that.ulica.sorted == 1 ? false : true);
+				that._sort('ulica', that.ulica.sorted === 1 ? false : true);
 				that.ulica.sorted = -that.ulica.sorted;
 			});
-			$('#filtrNazwa').on('input',function(e){
+			$('#filtrNazwa').on('input', function (e) {
 				impet.firmy._records.recoverRecords();
 				impet.firmy._filter('nazwa', this.value);
-			})
-			$('#filtrMiejscowosc').on('input',function(e){
+			});
+			$('#filtrMiejscowosc').on('input', function (e) {
 				impet.firmy._records.recoverRecords();
 				impet.firmy._filter('miejscowoscNazwa', this.value);
-			})
-			f=impet.firmy;
-		}
+			});
+			window.f = impet.firmy;
+		};
 		impet.firmy._openTable($('#divTabela'));
 		impet.firmy._firmyOtwartoTabele();
 		
@@ -410,17 +415,17 @@ firmy.$table.empty().append(firmy._htmlTable);
 	});
 
 
-	impet.ustaweinia = new Recordset('ustawienia');
-	impet.ustaweinia._serverLoad();
-	impet.klienci= new nora.Recordset('mw_klienci','kli_id');
-	impet.klienci._server.serverPath="http://localhost/ajaxmysql.php";
+//	impet.ustaweinia = new Recordset('ustawienia');
+//	impet.ustaweinia._serverLoad();
+	impet.klienci = new nora.Recordset('mw_klienci', 'kli_id');
+	impet.klienci._server.serverPath = "http://localhost/ajaxmysql.php";
 	impet.klienci._serverLoad();
-	impet.klienciHistoria= new nora.Recordset('mw_historiaklienta','hik_id');
-	impet.klienciHistoria._server.serverPath="http://localhost/ajaxmysql.php";
+	impet.klienciHistoria = new nora.Recordset('mw_historiaklienta', 'hik_id');
+	impet.klienciHistoria._server.serverPath = "http://localhost/ajaxmysql.php";
 	impet.klienciHistoria._serverLoad();
 	
-	{
-		var tablicaZnakow = {
+	if (true !== false) {
+		window.tablicaZnakow = {
 			telefon: '<span style="font-size:1.6em;">☎</span>',
 			telefonBialy: '<span style="font-size:1.6em;">☏</span>',
 			zaliczone: '<span style="font-size:1.6em;color:green;">✔</span>',
@@ -433,7 +438,7 @@ firmy.$table.empty().append(firmy._htmlTable);
 			pioro: '<span style="font-size:1.6em;">✒</span>',
 			wyjazd: "<img width='24' src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAIAAAGLH901AAAABnRSTlMA/wD/AP83WBt9AAAACXBIWXMAAA7DAAAOwwHHb6hkAAAC7klEQVR4nKVWTUhUURQ+waxa9UdEyEwoJRUoZbWosIKiAiOFINRdBCatwoTUokKnRSjVwnKiFi20TWAxUgsJzGhTKwfaFEZBGESREkS76bvv3Ll/77437+XHY97MPffc8/edcydTLpepggy/Bhvpa6ny48pcIOlaIfcUypTx6EAuJGRA6mB5esTW4f2dY9TcZauwxvi5QMBHjhykD6+sHRm1kU/XAseG6yPjwmr6syj1LAFWgR+faF2tLWDM3KVTw7YAhzy5KFbFUePddLSXBuq0GGELwewY4WGcL1JDixEHY21Orkp3o+JgPOig1iHhpD8+B1zMd48pP6914hQUlr7FKpSmaPSEtXJzv/isaRCckcVHWLvb6e9vUcP3L/x24J7OBk7F7twuyjXRng4rLRRk9PmQLJR2CWebFAFUrEd6xDNbEJyyYkDKj/UJmoWhuFWlDmHEpRW8enqZzk4kU0CgYBaApN36lUBhR5tUWJNNYAHOKKIi/eAIt3mkArIJ6nK9ucBVLMAZpj9VCqw61aPQv4l+fnEXocPt4lG48dmyU7DrJMmHymd3ChqXii5BVI21S3wGulg1awz0DNpyQNoBW02AyG8nRN9pBYZi68NO8blylSwwAsUDgvC5iVrUdSkMDCe4Z0KVxVJAlzrcZJh1TN0PaZE6ZgZS/WxAsIwCcp7Mu2NjuQY2bov7uSwD6MR7bdJ3Br6jNxFH96Q15FMbCB9tIspMCgNQwyDAcJ28JGeyCRC7fdTtihQG4P6jM27fmoBJtBAeVPv0nZSXGwXu98xYK4rsaBm+1b34TxYlh5xfZnGqZsMB4lB96zHAL3AAdxJfs0425t/oifz9o7iTgcUFWloIFOc8BfcYADAB1RD0AjypaaT6Q7T1MNXti9w2dZ1e3tZWU9QAOjxzi9fiCttyldZvlkM5nQEGLoLWfFwEwOv7+nt1A8jM9uOiNuEmCkP9Y/AbwP+d2r20oZ6yTZHT0QsM1+lhP/H+AYvTHj4n1sS+AAAAAElFTkSuQmCC'>",
 			finished: '<span style="font-size:1.6em;color:blue;">☑</span>'
-		}
+		};
 
 //		MarkerGenerator = {
 //			kolorObrysu: '3344aa',
@@ -653,3 +658,4 @@ firmy.$table.empty().append(firmy._htmlTable);
 //		}
 	}
 });
+console.log('main.js');

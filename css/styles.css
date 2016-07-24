@@ -97,3 +97,13 @@ body {
 	position: absolute;
 	bottom: 0;
 }
+
+#mapCanvas {
+    position: absolute;
+    top: 5%;
+    left: 5%;
+    width: 90%;
+    height: 65%;
+    background-color: aqua;
+
+}

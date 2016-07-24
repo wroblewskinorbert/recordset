@@ -916,4 +916,5 @@ var console, $, window, setTimeout, XMLHttpRequest, wysokoscDivData = 22;
 	window.nora = window.nora || {};
 	window.nora.Recordset = Recordset;
 	window.nora.defineProp = defineProp;
+    console.log('recordset');
 })();
