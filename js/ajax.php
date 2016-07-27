@@ -4,8 +4,8 @@
 // table - musi byc okreslone - gdy TABLE TAK jest a ACTION - NIE - wtedy - SELECT * FROM dbo.tbltable
 
 // 	ACTION=SELECT -> jezeli DATA=0 to SELECT * FROM dbo.tbltable WHERE CONDITION
-//	 			 -> w przeciwnym wypadku sql=encodeURIComponent(JSON.stringify(data));
-//	
+//	 			 jeżeli DATA = 1 -> sql=encodeURIComponent(JSON.stringify(data));
+//					jeżeli DATA innaczej - to oznacza kolumny do wybrania
 //	ACTION=INSERT
 //
 header("Content-type: text/json; charset=UTF-8");
@@ -24,9 +24,14 @@ $_REQUEST['action']='select';
 	$serverName = "PENTIUM24\INSERTGT";
 	$uid = "sa";
 	$pwd = "";
+//	$connectionInfo = array("UID" => $uid, "PWD" => $pwd, "Database" => "Impet_armatura");//, "CharacterSet" => "UTF-8"
 	$connectionInfo = array("UID" => $uid, "PWD" => $pwd, "Database" => "Impet_armatura", "CharacterSet" => "UTF-8");
-	$conn = sqlsrv_connect($serverName, $connectionInfo) or dbError('Blad polaczenia z baza danych');
-
+	$conn = sqlsrv_connect($serverName, $connectionInfo);
+	if (!$conn){
+		$connectionInfo = array("UID" => $uid, "PWD" => $pwd, "Database" => "Impet_armatura");
+		$conn = sqlsrv_connect($serverName, $connectionInfo) or dbError('Blad polaczenia z baza danych');
+	}	
+	
 	$tab = 'dbo.tbl' . $_REQUEST['table'];
 	$act = $_REQUEST['action'];
 	$con =$_REQUEST['condition'];
@@ -38,10 +43,19 @@ $_REQUEST['action']='select';
 	if ($act == 'select') 
 	{//SELECT
 		if ($dat !== 0) {
-			$tsql = $dat;
+			if ($dat!==1){
+				if  (!isset($con)){
+				}
+				$tsql = "SELECT $dat FROM $tab WHERE $con";
+			} else {
+				$tsql = $con;
+			}
 		} else {
 			$tsql = "SELECT *  FROM $tab WHERE $con";
 		}	
+		//echo $dat."\n\r";
+		
+//		echo $tsql;
 		$stmt = sqlsrv_query($conn, $tsql, $params) or dbError('Blad po zapytaniu');
 		$rekordy = array();
 		while ($mRow = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
@@ -64,8 +78,14 @@ $_REQUEST['action']='select';
 		sqlsrv_next_result($stmt);
 		sqlsrv_fetch($stmt);
 		$id = sqlsrv_get_field($stmt, 0);
-		$dat -> $con =intval($id);
-		echo json_encode($dat);
+//
+		$tsql = "SELECT * FROM $tab WHERE $con = $id";
+		$stmt = sqlsrv_query($conn, $tsql, $params) or dbError('Blad po zapytaniu po insert');
+		$mRow = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
+		echo json_encode($mRow);
+//		$rekordy = array();
+//		$dat -> $con =intval($id);
+//		echo json_encode($dat);
 	} elseif ($act == 'update') 
 	{// UPDATE
 		foreach ($dat as $key => $val) {
@@ -74,12 +94,16 @@ $_REQUEST['action']='select';
 		$set = implode(', ', $setAr);
 		$tsql = "UPDATE $tab SET $set WHERE $con;";
 		$stmt = sqlsrv_query($conn, $tsql);
-		$rows_affected = sqlsrv_rows_affected($stmt) or dbError('Blad po update');
-		if ($rows_affected == -1) {
-			echo "{\"update\":\"No information available.\"}";
-		} else {
-			echo "{\"update\": $rows_affected}";
-		}
+	//	$rows_affected = sqlsrv_rows_affected($stmt) or dbError('Blad po update');
+		$tsql = "SELECT *  FROM $tab WHERE $con";
+		$stmt = sqlsrv_query($conn, $tsql) or dbError('Blad przy zapytaniu po update');
+		$rekordy = array(); while ($mRow = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) { $rekordy[] = $mRow; }echo json_encode($rekordy);
+
+//		if ($rows_affected == -1) {
+//			echo "{\"update\":\"No information available.\"}";
+//		} else {
+//			echo "{\"update\": $rows_affected}";
+//		}
 
 	} elseif ($act == 'delete') {
 		$tsql = "DELETE FROM $tab WHERE $con;";
