@@ -3,11 +3,16 @@ var nbsp = '&nbsp;';
 var wysokoscDivData = 27;
 var impet = {},
 	nora,
-    $;
+	$;
 
 $(document).ready(function () {
-    'use strict';
-	var defineProp = nora.defineProp, Recordset = nora.Recordset;
+	'use strict';
+	//	$.ajaxSetup({
+	//		async: false
+	//	});
+	return;
+	var defineProp = nora.defineProp,
+		Recordset = nora.Recordset;
 	impet.firmy = new Recordset('firmy');
 	impet.firmy._serverLoad();
 	impet.telefony = new Recordset('FirmyNumeryTelefonow');
@@ -30,7 +35,7 @@ $(document).ready(function () {
 	impet.telefony._server.deferred.done(function () {
 		impet.telefony._wypiszRekord = function () {
 			var telString = "",
-                nrWidoczny = this._current.numer;
+				nrWidoczny = this._current.numer;
 			if (this._current.podstawowy === 1) {
 				nrWidoczny = '<b>' + nrWidoczny + '</b>';
 			}
@@ -126,8 +131,8 @@ $(document).ready(function () {
 		*/
 		function filterRestOfRecords() {
 			if (impet.firmy._current.id === null) {
-                return;
-            }
+				return;
+			}
 			impet.telefony._clearFilter();
 			impet.telefony._filter('firmaId', '==' + impet.firmy._current.id);
 			impet.firmyPracownicy._clearFilter();
@@ -274,7 +279,7 @@ $(document).ready(function () {
 		};
 		impet.firmy._openTable($('#divTabela'));
 		impet.firmy._firmyOtwartoTabele();
-		
+
 		/*
 				firmy.dodajMarker = function (x, jaki, size) {
 					function zamianaPriorytetuNaKolor(priorytet) {
@@ -389,41 +394,41 @@ $(document).ready(function () {
 					
 					*/
 
-/*
-		//		$.when(firmyPracownicy._server.deferred).done(function(){
-		//		//		debugger;
-		//
-		//		})
-		//defineProp(firmy._div)
+		/*
+				//		$.when(firmyPracownicy._server.deferred).done(function(){
+				//		//		debugger;
+				//
+				//		})
+				//defineProp(firmy._div)
 
-		//	firmy.nazwa.filter = 'tes';
-		//	firmy.ocena.filter = '==5||==6||==4||==0||==null';
-		
+				//	firmy.nazwa.filter = 'tes';
+				//	firmy.ocena.filter = '==5||==6||==4||==0||==null';
+				
 
-	firmy.ulica.filter=".*mie";
-firmy.ulica.filter="";
+			firmy.ulica.filter=".*mie";
+		firmy.ulica.filter="";
 
-firmy._history.push({records:firmy._records, htmlTable:firmy.$table.detach()});firmy._records=firmy._filterRecordset(); firmy._openTable();
+		firmy._history.push({records:firmy._records, htmlTable:firmy.$table.detach()});firmy._records=firmy._filterRecordset(); firmy._openTable();
 
-firmy._records=firmy._history.pop();
-firmy._htmlTable=firmy._records.htmlTable;
-firmy._records=firmy._records.records;
-firmy.$table.empty().append(firmy._htmlTable);
+		firmy._records=firmy._history.pop();
+		firmy._htmlTable=firmy._records.htmlTable;
+		firmy._records=firmy._records.records;
+		firmy.$table.empty().append(firmy._htmlTable);
 
 
-*/
+		*/
 	});
 
 
-//	impet.ustaweinia = new Recordset('ustawienia');
-//	impet.ustaweinia._serverLoad();
+	//	impet.ustaweinia = new Recordset('ustawienia');
+	//	impet.ustaweinia._serverLoad();
 	impet.klienci = new nora.Recordset('mw_klienci', 'kli_id');
 	impet.klienci._server.serverPath = "http://localhost/ajaxmysql.php";
 	impet.klienci._serverLoad();
 	impet.klienciHistoria = new nora.Recordset('mw_historiaklienta', 'hik_id');
 	impet.klienciHistoria._server.serverPath = "http://localhost/ajaxmysql.php";
 	impet.klienciHistoria._serverLoad();
-	
+
 	if (true !== false) {
 		window.tablicaZnakow = {
 			telefon: '<span style="font-size:1.6em;">☎</span>',
@@ -440,222 +445,222 @@ firmy.$table.empty().append(firmy._htmlTable);
 			finished: '<span style="font-size:1.6em;color:blue;">☑</span>'
 		};
 
-//		MarkerGenerator = {
-//			kolorObrysu: '3344aa',
-//			kolorWypelnienia: '5599cc',
-//			tekst: "Moje pierwsze maleństwo|No i prawdziwe szaleństwo|Super",
-//			// przedzielany |
-//			grubosc: '_',
-//			wielkoscCzcionki: '11',
-//			wyrownanie: 'h',
-//			wyrownaniePomoc: {
-//				'l': 'do lewej',
-//				'h': 'do środkaq',
-//				'r': 'do prawej'
-//			},
-//			skala: '0.5',
-//			rotacja: '-45',
-//			generuj: function (map, position) {
-//				return new google.maps.Marker({
-//					map: map,
-//					position: position,
-//					icon: MarkerGenerator.url
-//				});
-//			},
-//			zCieniem: '_withshadow',
-//			literka: '®'
-//		}
-//		defineProp(MarkerGenerator, "takeIkonaZnapisemUrl", function () {
-//			var url = 'https://chart.googleapis.com/chart?chst=d_map_spin&chld=' + MarkerGenerator.skala + '|' + MarkerGenerator.rotacja + '|' + MarkerGenerator.kolorWypelnienia + '|' + MarkerGenerator.wielkoscCzcionki +
-//				'|' + MarkerGenerator.grubosc + '|' + MarkerGenerator.tekst.replace(/\s/g, '+');
-//			return url;
-//		});
-//		defineProp(MarkerGenerator, "takeNapisUrl", function () {
-//			var url = 'https://chart.googleapis.com/chart?chst=d_text_outline&chld=' + MarkerGenerator.kolorWypelnienia + '|' + MarkerGenerator.wielkoscCzcionki + '|' + MarkerGenerator.wyrownanie + '|' + MarkerGenerator.kolorObrysu +
-//				'|' + MarkerGenerator.grubosc + '|' + MarkerGenerator.tekst.replace(/\s/g, '+');
-//			return url;
-//		});
-//		defineProp(MarkerGenerator, "takeIkonaZLiterkaUrl", function () {
-//			var url = 'https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=' + MarkerGenerator.literka + '|' + MarkerGenerator.kolorWypelnienia + '|' + MarkerGenerator.kolorObrysu
-//			return url;
-//		});
-//		defineProp(MarkerGenerator, "takeIkonaZLiterkaICieniemUrl", function () {
-//			var url = 'https://chart.googleapis.com/chart?chst=d_map_pin_letter_withshadow&chld=' + MarkerGenerator.literka + '|' + MarkerGenerator.kolorWypelnienia + '|' + MarkerGenerator.kolorObrysu
-//			return url;
-//		});
-//		defineProp(MarkerGenerator, "losowyKolor", function () {
-//			return ('00000' + Math.floor(Math.random() * 256 * 256 * 256).toString(16).substr(0, 6)).substr(-6);
-//		}); {
-//			function MapLabel(opt_options) {
-//				this.set('fontFamily', 'sans-serif');
-//				this.set('fontSize', 12);
-//				this.set('fontColor', '#000000');
-//				this.set('strokeWeight', 4);
-//				this.set('strokeColor', '#ffffff');
-//				this.set('align', 'center');
-//
-//				this.set('zIndex', 1e3);
-//
-//				this.setValues(opt_options);
-//			}
-//			
-//			
-//			MapLabel.prototype = new google.maps.OverlayView;
-//			window['MapLabel'] = MapLabel;
-//			/** @inheritDoc */
-//			MapLabel.prototype.changed = function (prop) {
-//				switch (prop) {
-//				case 'fontFamily':
-//				case 'fontSize':
-//				case 'fontColor':
-//				case 'strokeWeight':
-//				case 'strokeColor':
-//				case 'align':
-//				case 'text':
-//					return this.drawCanvas_();
-//				case 'maxZoom':
-//				case 'minZoom':
-//				case 'position':
-//					return this.draw();
-//				}
-//			};
-//			/**
-//			 * Draws the label to the canvas 2d context.
-//			 * @private
-//			 */
-//			MapLabel.prototype.drawCanvas_ = function () {
-//				var canvas = this.canvas_;
-//				if (!canvas)
-//					return;
-//
-//				var style = canvas.style;
-//				style.zIndex = /** @type number */ (this.get('zIndex'));
-//
-//				var ctx = canvas.getContext('2d');
-//				ctx.clearRect(0, 0, canvas.width, canvas.height);
-//				ctx.strokeStyle = this.get('strokeColor');
-//				ctx.fillStyle = this.get('fontColor');
-//				ctx.font = this.get('fontSize') + 'px ' + this.get('fontFamily');
-//
-//				var strokeWeight = Number(this.get('strokeWeight'));
-//
-//				var text = this.get('text');
-//				if (text) {
-//					if (strokeWeight) {
-//						ctx.lineWidth = strokeWeight;
-//						ctx.strokeText(text, strokeWeight, strokeWeight);
-//					}
-//
-//					ctx.fillText(text, strokeWeight, strokeWeight);
-//
-//					var textMeasure = ctx.measureText(text);
-//					var textWidth = textMeasure.width + strokeWeight;
-//					style.marginLeft = this.getMarginLeft_(textWidth) + 'px';
-//					// Bring actual text top in line with desired latitude.
-//					// Cheaper than calculating height of text.
-//					style.marginTop = '-0.4em';
-//				}
-//			};
-//			/**
-//			 * @inheritDoc
-//			 */
-//			MapLabel.prototype.onAdd = function () {
-//				var canvas = this.canvas_ = document.createElement('canvas');
-//				var style = canvas.style;
-//				style.position = 'absolute';
-//
-//				var ctx = canvas.getContext('2d');
-//				ctx.lineJoin = 'round';
-//				ctx.textBaseline = 'top';
-//
-//				this.drawCanvas_();
-//
-//				var panes = this.getPanes();
-//				if (panes) {
-//					panes.mapPane.appendChild(canvas);
-//				}
-//			};
-//			MapLabel.prototype['onAdd'] = MapLabel.prototype.onAdd;
-//			/**
-//			 * Gets the appropriate margin-left for the canvas.
-//			 * @private
-//			 * @param {number} textWidth  the width of the text, in pixels.
-//			 * @return {number} the margin-left, in pixels.
-//			 */
-//			MapLabel.prototype.getMarginLeft_ = function (textWidth) {
-//				switch (this.get('align')) {
-//				case 'left':
-//					return 0;
-//				case 'right':
-//					return -textWidth;
-//				}
-//				return textWidth / -2;
-//			};
-//			/**
-//			 * @inheritDoc
-//			 */
-//			MapLabel.prototype.draw = function () {
-//				var projection = this.getProjection();
-//
-//				if (!projection) {
-//					// The map projection is not ready yet so do nothing
-//					return;
-//				}
-//
-//				if (!this.canvas_) {
-//					// onAdd has not been called yet.
-//					return;
-//				}
-//
-//				var latLng = /** @type {google.maps.LatLng} */ (this.get('position'));
-//				if (!latLng) {
-//					return;
-//				}
-//				var pos = projection.fromLatLngToDivPixel(latLng);
-//
-//				var style = this.canvas_.style;
-//
-//				style['top'] = pos.y + 'px';
-//				style['left'] = pos.x + 'px';
-//
-//				style['visibility'] = this.getVisible_();
-//			};
-//			MapLabel.prototype['draw'] = MapLabel.prototype.draw;
-//			/**
-//			 * Get the visibility of the label.
-//			 * @private
-//			 * @return {string} blank string if visible, 'hidden' if invisible.
-//			 */
-//			MapLabel.prototype.getVisible_ = function () {
-//				var minZoom = /** @type number */ (this.get('minZoom'));
-//				var maxZoom = /** @type number */ (this.get('maxZoom'));
-//
-//				if (minZoom === undefined && maxZoom === undefined) {
-//					return '';
-//				}
-//
-//				var map = this.getMap();
-//				if (!map) {
-//					return '';
-//				}
-//
-//				var mapZoom = map.getZoom();
-//				if (mapZoom < minZoom || mapZoom > maxZoom) {
-//					return 'hidden';
-//				}
-//				return '';
-//			};
-//			/**
-//			 * @inheritDoc
-//			 */
-//			MapLabel.prototype.onRemove = function () {
-//				var canvas = this.canvas_;
-//				if (canvas && canvas.parentNode) {
-//					canvas.parentNode.removeChild(canvas);
-//				}
-//			};
-//			MapLabel.prototype['onRemove'] = MapLabel.prototype.onRemove;
-//		}
+		//		MarkerGenerator = {
+		//			kolorObrysu: '3344aa',
+		//			kolorWypelnienia: '5599cc',
+		//			tekst: "Moje pierwsze maleństwo|No i prawdziwe szaleństwo|Super",
+		//			// przedzielany |
+		//			grubosc: '_',
+		//			wielkoscCzcionki: '11',
+		//			wyrownanie: 'h',
+		//			wyrownaniePomoc: {
+		//				'l': 'do lewej',
+		//				'h': 'do środkaq',
+		//				'r': 'do prawej'
+		//			},
+		//			skala: '0.5',
+		//			rotacja: '-45',
+		//			generuj: function (map, position) {
+		//				return new google.maps.Marker({
+		//					map: map,
+		//					position: position,
+		//					icon: MarkerGenerator.url
+		//				});
+		//			},
+		//			zCieniem: '_withshadow',
+		//			literka: '®'
+		//		}
+		//		defineProp(MarkerGenerator, "takeIkonaZnapisemUrl", function () {
+		//			var url = 'https://chart.googleapis.com/chart?chst=d_map_spin&chld=' + MarkerGenerator.skala + '|' + MarkerGenerator.rotacja + '|' + MarkerGenerator.kolorWypelnienia + '|' + MarkerGenerator.wielkoscCzcionki +
+		//				'|' + MarkerGenerator.grubosc + '|' + MarkerGenerator.tekst.replace(/\s/g, '+');
+		//			return url;
+		//		});
+		//		defineProp(MarkerGenerator, "takeNapisUrl", function () {
+		//			var url = 'https://chart.googleapis.com/chart?chst=d_text_outline&chld=' + MarkerGenerator.kolorWypelnienia + '|' + MarkerGenerator.wielkoscCzcionki + '|' + MarkerGenerator.wyrownanie + '|' + MarkerGenerator.kolorObrysu +
+		//				'|' + MarkerGenerator.grubosc + '|' + MarkerGenerator.tekst.replace(/\s/g, '+');
+		//			return url;
+		//		});
+		//		defineProp(MarkerGenerator, "takeIkonaZLiterkaUrl", function () {
+		//			var url = 'https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=' + MarkerGenerator.literka + '|' + MarkerGenerator.kolorWypelnienia + '|' + MarkerGenerator.kolorObrysu
+		//			return url;
+		//		});
+		//		defineProp(MarkerGenerator, "takeIkonaZLiterkaICieniemUrl", function () {
+		//			var url = 'https://chart.googleapis.com/chart?chst=d_map_pin_letter_withshadow&chld=' + MarkerGenerator.literka + '|' + MarkerGenerator.kolorWypelnienia + '|' + MarkerGenerator.kolorObrysu
+		//			return url;
+		//		});
+		//		defineProp(MarkerGenerator, "losowyKolor", function () {
+		//			return ('00000' + Math.floor(Math.random() * 256 * 256 * 256).toString(16).substr(0, 6)).substr(-6);
+		//		}); {
+		//			function MapLabel(opt_options) {
+		//				this.set('fontFamily', 'sans-serif');
+		//				this.set('fontSize', 12);
+		//				this.set('fontColor', '#000000');
+		//				this.set('strokeWeight', 4);
+		//				this.set('strokeColor', '#ffffff');
+		//				this.set('align', 'center');
+		//
+		//				this.set('zIndex', 1e3);
+		//
+		//				this.setValues(opt_options);
+		//			}
+		//			
+		//			
+		//			MapLabel.prototype = new google.maps.OverlayView;
+		//			window['MapLabel'] = MapLabel;
+		//			/** @inheritDoc */
+		//			MapLabel.prototype.changed = function (prop) {
+		//				switch (prop) {
+		//				case 'fontFamily':
+		//				case 'fontSize':
+		//				case 'fontColor':
+		//				case 'strokeWeight':
+		//				case 'strokeColor':
+		//				case 'align':
+		//				case 'text':
+		//					return this.drawCanvas_();
+		//				case 'maxZoom':
+		//				case 'minZoom':
+		//				case 'position':
+		//					return this.draw();
+		//				}
+		//			};
+		//			/**
+		//			 * Draws the label to the canvas 2d context.
+		//			 * @private
+		//			 */
+		//			MapLabel.prototype.drawCanvas_ = function () {
+		//				var canvas = this.canvas_;
+		//				if (!canvas)
+		//					return;
+		//
+		//				var style = canvas.style;
+		//				style.zIndex = /** @type number */ (this.get('zIndex'));
+		//
+		//				var ctx = canvas.getContext('2d');
+		//				ctx.clearRect(0, 0, canvas.width, canvas.height);
+		//				ctx.strokeStyle = this.get('strokeColor');
+		//				ctx.fillStyle = this.get('fontColor');
+		//				ctx.font = this.get('fontSize') + 'px ' + this.get('fontFamily');
+		//
+		//				var strokeWeight = Number(this.get('strokeWeight'));
+		//
+		//				var text = this.get('text');
+		//				if (text) {
+		//					if (strokeWeight) {
+		//						ctx.lineWidth = strokeWeight;
+		//						ctx.strokeText(text, strokeWeight, strokeWeight);
+		//					}
+		//
+		//					ctx.fillText(text, strokeWeight, strokeWeight);
+		//
+		//					var textMeasure = ctx.measureText(text);
+		//					var textWidth = textMeasure.width + strokeWeight;
+		//					style.marginLeft = this.getMarginLeft_(textWidth) + 'px';
+		//					// Bring actual text top in line with desired latitude.
+		//					// Cheaper than calculating height of text.
+		//					style.marginTop = '-0.4em';
+		//				}
+		//			};
+		//			/**
+		//			 * @inheritDoc
+		//			 */
+		//			MapLabel.prototype.onAdd = function () {
+		//				var canvas = this.canvas_ = document.createElement('canvas');
+		//				var style = canvas.style;
+		//				style.position = 'absolute';
+		//
+		//				var ctx = canvas.getContext('2d');
+		//				ctx.lineJoin = 'round';
+		//				ctx.textBaseline = 'top';
+		//
+		//				this.drawCanvas_();
+		//
+		//				var panes = this.getPanes();
+		//				if (panes) {
+		//					panes.mapPane.appendChild(canvas);
+		//				}
+		//			};
+		//			MapLabel.prototype['onAdd'] = MapLabel.prototype.onAdd;
+		//			/**
+		//			 * Gets the appropriate margin-left for the canvas.
+		//			 * @private
+		//			 * @param {number} textWidth  the width of the text, in pixels.
+		//			 * @return {number} the margin-left, in pixels.
+		//			 */
+		//			MapLabel.prototype.getMarginLeft_ = function (textWidth) {
+		//				switch (this.get('align')) {
+		//				case 'left':
+		//					return 0;
+		//				case 'right':
+		//					return -textWidth;
+		//				}
+		//				return textWidth / -2;
+		//			};
+		//			/**
+		//			 * @inheritDoc
+		//			 */
+		//			MapLabel.prototype.draw = function () {
+		//				var projection = this.getProjection();
+		//
+		//				if (!projection) {
+		//					// The map projection is not ready yet so do nothing
+		//					return;
+		//				}
+		//
+		//				if (!this.canvas_) {
+		//					// onAdd has not been called yet.
+		//					return;
+		//				}
+		//
+		//				var latLng = /** @type {google.maps.LatLng} */ (this.get('position'));
+		//				if (!latLng) {
+		//					return;
+		//				}
+		//				var pos = projection.fromLatLngToDivPixel(latLng);
+		//
+		//				var style = this.canvas_.style;
+		//
+		//				style['top'] = pos.y + 'px';
+		//				style['left'] = pos.x + 'px';
+		//
+		//				style['visibility'] = this.getVisible_();
+		//			};
+		//			MapLabel.prototype['draw'] = MapLabel.prototype.draw;
+		//			/**
+		//			 * Get the visibility of the label.
+		//			 * @private
+		//			 * @return {string} blank string if visible, 'hidden' if invisible.
+		//			 */
+		//			MapLabel.prototype.getVisible_ = function () {
+		//				var minZoom = /** @type number */ (this.get('minZoom'));
+		//				var maxZoom = /** @type number */ (this.get('maxZoom'));
+		//
+		//				if (minZoom === undefined && maxZoom === undefined) {
+		//					return '';
+		//				}
+		//
+		//				var map = this.getMap();
+		//				if (!map) {
+		//					return '';
+		//				}
+		//
+		//				var mapZoom = map.getZoom();
+		//				if (mapZoom < minZoom || mapZoom > maxZoom) {
+		//					return 'hidden';
+		//				}
+		//				return '';
+		//			};
+		//			/**
+		//			 * @inheritDoc
+		//			 */
+		//			MapLabel.prototype.onRemove = function () {
+		//				var canvas = this.canvas_;
+		//				if (canvas && canvas.parentNode) {
+		//					canvas.parentNode.removeChild(canvas);
+		//				}
+		//			};
+		//			MapLabel.prototype['onRemove'] = MapLabel.prototype.onRemove;
+		//		}
 	}
 });
 console.log('main.js');

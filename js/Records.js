@@ -296,16 +296,20 @@ function Records(table, idName, autoLoad, where, orderBy) {
 			return;
 		});
 	};
-	Object.defineProperty(this, 'asyn', {
+	Object.defineProperty(this, 'async', {
 		get: function () {
 			var res = {
-				state: !that.synchro
+				state: $.ajaxSetup().async
 			};
-			defineProp(res, 'true', function () {
-				that.synchro = false;
+			defineProp(res, 'tru', function () {
+				$.ajaxSetup({
+					async: true
+				});
 			});
-			defineProp(res, 'false', function () {
-				that.synchro = true;
+			defineProp(res, 'fal', function () {
+				$.ajaxSetup({
+					async: false
+				});
 			});
 			return res;
 		}
@@ -361,14 +365,8 @@ Records.prototype.parameters = function () {
 			}
 		});
 		res = JSON.stringify(res);
-		if (that.synchro) {
-			return encodeURIComponent(res);
-		}
 		return res;
 	}, false, true);
-	defineProp(para, 'URI', function () {
-		return that.serverPath + '?table=' + para.table + '&action=' + para.action + '&data=' + para.data + '&condition=' + encodeURIComponent(para.condition) + '&random=' + parseInt(Math.random() * 10000000000, 10);
-	}, false);
 	return para;
 };
 Records.prototype.get = function () {
@@ -376,8 +374,7 @@ Records.prototype.get = function () {
 	var paraObj = this.parameters(),
 		that = this,
 		data,
-		xhr,
-		deferred = new $.Deferred();
+		deferred;
 	if (this.action === 'update' || this.action === 'delete') {
 		paraObj.condition = this.idName + "='" + this.id + "'";
 	}
@@ -389,32 +386,13 @@ Records.prototype.get = function () {
 		paraObj.condition = " WHERE " + this.idName + "='" + this.id + "'";
 	}
 	this.response = null;
-	if (!this.synchro) {
-		that.deferred = $.get(that.serverPath, paraObj).done(function (data) {
-			if (that.columns.length) {
-				that.columns.clearDirties();
-			}
-			that.response = data;
-		});
-		return that;
-	} else {
-		xhr = new XMLHttpRequest();
-		data = paraObj.URI;
-		xhr.open('GET', data, false);
-		xhr.send();
-		console.log(xhr.status);
-		console.log(xhr.statusText);
-		data = $.parseJSON(xhr.response);
+	that.deferred = $.get(that.serverPath, paraObj).done(function (data) {
+		if (that.columns.length) {
+			that.columns.clearDirties();
+		}
 		that.response = data;
-		that.deferred = deferred.promise();
-		deferred.resolve(data, "success");
-		that.deferred.done(function (data, status) {
-			if (that.columns.length) {
-				that.columns.clearDirties();
-			}
-		});
-		return that;
-	}
+	});
+	return that;
 };
 Records.prototype.loadAll = function () {
 	'use strict';
@@ -508,9 +486,10 @@ Records.prototype.last = function () {
 $(function () {
 	'use strict';
 	rec = new Records('firmy', 'id', false);
+	//	console.log(rec.async.fal);
 
 	function zmianaDannychFirmy(rec, name, temp) {
-		console.log(rec[name], temp);
+		//		console.log(rec[name], temp);
 	}
 	rec.changedProperty.add(zmianaDannychFirmy);
 	rec.startFunction = function (row) {
@@ -536,14 +515,19 @@ $(function () {
 			lng: 21
 		}
 	});
-	var map = window.map;
+	var map = window.map,
+		miasta,
+		prac,
+		impetPracownicy;
 	//debugger;
 	rec.loadAll();
-	window.miasta = new Records('plMiejscowosci', 'id', true, '1=1', 'nazwa');
-	window.prac = new Records('firmypracownicy');
+	miasta = window.miasta = new Records('plMiejscowosci', 'id', true, '1=1', 'nazwa');
+	prac = window.prac = new Records('firmypracownicy');
 	odc = new Records('odcinki', 'key1', false);
-	window.impetPracownicy = new Records('impetPracownicy', 'id2');
-
+	impetPracownicy = window.impetPracownicy = new Records('impetPracownicy', 'id2');
+	$.when(miasta.deferred, prac.deferred, rec.deferred, impetPracownicy.deferred).done(function () {
+		console.timeEnd('nora');
+	});
 });
 /*
 trasyPunkty = new Records('trasyPunktyView', 'id', true, '1=1', ' kiedy desc');
